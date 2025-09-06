@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import urllib.parse
 from flask import Flask, render_template, request, redirect, url_for, flash, session, g
 from flask_mail import Mail, Message
 from functools import wraps
@@ -53,6 +54,7 @@ CLINIC = {
     "email": "luaxhealth@gmail.com",
     "hours": "24 hour services  ."
 }
+CLINIC["address_url"] = urllib.parse.quote_plus(CLINIC["address"])
 
 # List of services offered at the clinic
 SERVICES = [

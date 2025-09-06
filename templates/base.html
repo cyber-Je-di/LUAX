@@ -4,87 +4,100 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{{ clinic.name }} — Healthcare made personal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='admin_login.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='success.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='update_appointment.css') }}">
 </head>
 <body>
+
   <header class="site-header">
     <div class="container header-inner">
-      <div class="brand">
+      <a href="/" class="brand">
         <div class="logo">🌿</div>
         <div>
           <h1 class="clinic-name">{{ clinic.name }}</h1>
-          <div class="clinic-sub">{{ clinic.address }}</div>
+          <p class="clinic-sub">Your Health, Our Priority</p>
         </div>
-      </div>
+      </a>
 
-      <div class="header-right">
-        <div class="header-actions">
-          <a class="pill" href="tel:{{ clinic.phone }}">Call {{ clinic.phone_display }}</a>
-          <a class="pill outline" href="mailto:{{ clinic.email }}">Email</a>
-          <a class="pill whatsapp" href="https://wa.me/{{ clinic.phone | replace('+','') }}">WhatsApp</a>
-        </div>
-
-        <!-- Hamburger Icon -->
-        <div class="hamburger" id="hamburger">
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-        </div>
-      </div>
-    </div>
-
-    <nav class="nav" id="nav-menu">
-      <div class="container nav-links">
+      <nav class="main-nav" id="main-nav">
         <a href="/">Home</a>
-        <a href="#services">Services</a>
-        <a href="#team">Team</a>
-        <a href="#appointment">Book Appointment</a>
-        <a href="/admin" class="admin-link">Admin</a>
+        <a href="/#services">Services</a>
+        <a href="/#team">Team</a>
+        <a href="/#appointment">Book</a>
+        <a href="{{ url_for('check_status') }}">Check Status</a>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn primary mobile-only" style="margin-top:1rem;">Admin Login</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn outline">Admin Login</a>
       </div>
-    </nav>
+
+      <button class="hamburger" id="hamburger">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    </div>
   </header>
 
   <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="container">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
     {% block content %}{% endblock %}
   </main>
 
   <footer class="site-footer">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <h3>{{ clinic.name }}</h3>
-        <p>Compassionate healthcare, wherever you are.</p>
+    <div class="container footer-container">
+      <div>
+        <h4>{{ clinic.name }}</h4>
+        <p>Compassionate, timely healthcare for our community.</p>
       </div>
-      <div class="footer-links">
-        <div class="contact-info">
-          <p>Phone: <a href="tel:{{ clinic.phone }}">{{ clinic.phone_display }}</a></p>
-          <p>Email: <a href="mailto:{{ clinic.email }}">{{ clinic.email }}</a></p>
-          <p>Address: {{ clinic.address }}</p>
-        </div>
-        <div class="social-icons">
-          <a href="https://facebook.com" target="_blank" class="social-icon fb">Facebook</a>
-          <a href="https://twitter.com" target="_blank" class="social-icon tw">Twitter</a>
-          <a href="https://instagram.com" target="_blank" class="social-icon ig">Instagram</a>
-        </div>
+      <div>
+        <h4>Quick Links</h4>
+        <p><a href="/#services">Services</a></p>
+        <p><a href="/#appointment">Book Appointment</a></p>
+        <p><a href="{{ url_for('check_status') }}">Check Appointment Status</a></p>
       </div>
-      <div class="footer-bottom">
-        © {{ clinic.name }} — All rights reserved.
+      <div>
+        <h4>Contact Us</h4>
+        <p><a href="tel:{{ clinic.phone }}">{{ clinic.phone_display }}</a></p>
+        <p><a href="mailto:{{ clinic.email }}">{{ clinic.email }}</a></p>
+        <p>{{ clinic.address }}</p>
       </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; {{ "now" | strftime("%Y") }} {{ clinic.name }}. All Rights Reserved.</p>
     </div>
   </footer>
 
-  <!-- JS for Hamburger -->
   <script>
     const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('nav-menu');
+    const mainNav = document.getElementById('main-nav');
 
     hamburger.addEventListener('click', () => {
+      mainNav.classList.toggle('active');
       hamburger.classList.toggle('active');
-      navMenu.classList.toggle('active');
+    });
+
+    // Close menu if a link is clicked
+    document.querySelectorAll('#main-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (mainNav.classList.contains('active')) {
+          mainNav.classList.remove('active');
+          hamburger.classList.remove('active');
+        }
+      });
     });
   </script>
+
 </body>
 </html>
