@@ -5,23 +5,30 @@
   align-items: center;
   flex-wrap: wrap;
   margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid var(--border);
+  animation: fadeSlide 0.6s ease forwards;
 }
 
 .dashboard-header h1 {
   font-size: 1.6rem;
   margin-bottom: 0.5rem;
+  color: var(--accent-dark);
+  font-weight: 700;
 }
 
+/* Table container for horizontal scroll */
 .table-container {
   overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  animation: fadeUp 0.8s ease forwards;
 }
 
 .appointments-table {
   width: 100%;
   border-collapse: collapse;
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   background: #fff;
 }
 
@@ -30,13 +37,15 @@
   padding: 0.8rem 0.6rem;
   text-align: left;
   font-size: 0.9rem;
+  transition: background 0.2s ease;
 }
 
 .appointments-table th {
   background: var(--accent);
-  color: rgb(255, 255, 255);
+  color: #fff;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .appointments-table tr:nth-child(even) {
@@ -45,9 +54,11 @@
 
 .appointments-table tr:hover {
   background: #e6fffa;
-  transition: 0.2s ease;
+  transition: background 0.3s ease;
+  transform: scale(1.002);
 }
 
+/* --- Status Badges --- */
 .status-badge {
   display: inline-block;
   padding: 0.3rem 0.6rem;
@@ -55,6 +66,10 @@
   font-size: 0.8rem;
   font-weight: 600;
   text-align: center;
+  transition: transform 0.3s ease;
+}
+.status-badge:hover {
+  transform: scale(1.1);
 }
 
 /* Pending */
@@ -81,55 +96,13 @@
   color: #1e40af;
 }
 
-.status-form {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-}
-
-.status-form select {
-  padding: 0.3rem 0.5rem;
-  font-size: 0.85rem;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-}
-
-.status-form button {
-  padding: 0.3rem 0.5rem;
-  font-size: 0.85rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  background: var(--accent);
-  color: #ffffff;
-  transition: 0.2s ease;
-}
-
-.status-form button:hover {
-  background: var(--accent-dark);
-}
-
-/* RESPONSIVE TABLE */
-@media (max-width: 768px) {
-  .appointments-table th, .appointments-table td {
-    font-size: 0.8rem;
-    padding: 0.5rem 0.3rem;
-  }
-
-  .status-form {
-    flex-direction: column;
-  }
-
-  .status-form button {
-    width: 100%;
-  }
-}
-
 /* --- Status Form Styling --- */
 .status-form {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-top: 0.5rem;
+  animation: fadeSlide 0.7s ease forwards;
 }
 
 .status-form select, 
@@ -140,6 +113,14 @@
   border: 1px solid #ddd;
   width: 100%;
   resize: vertical;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.status-form select:focus,
+.status-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(44, 122, 123, 0.2);
 }
 
 .status-form textarea {
@@ -167,15 +148,28 @@
   background: var(--accent);
   color: #fff;
   font-weight: 600;
-  transition: 0.2s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .status-form button:hover {
   background: var(--accent-dark);
+  transform: translateY(-2px) scale(1.02);
 }
 
-/* Responsive tweaks */
+/* --- Responsive Tweaks --- */
+@media (max-width: 992px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 @media (max-width: 768px) {
+  .appointments-table th, .appointments-table td {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.3rem;
+  }
+
   .status-form {
     flex-direction: column;
   }
@@ -185,3 +179,22 @@
   }
 }
 
+@media (max-width: 480px) {
+  .dashboard-header h1 {
+    font-size: 1.3rem;
+  }
+  .appointments-table th, .appointments-table td {
+    font-size: 0.75rem;
+  }
+}
+
+/* --- Animations --- */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}

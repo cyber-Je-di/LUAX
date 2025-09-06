@@ -97,6 +97,49 @@
         }
       });
     });
+
+      // Animate stats counters on scroll
+  document.addEventListener("DOMContentLoaded", () => {
+    const counters = document.querySelectorAll("#stats h2");
+    const speed = 150; // lower = faster
+
+    const animateCounters = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const counter = entry.target;
+          const updateCount = () => {
+            const target = +counter.getAttribute("data-target");
+            const count = +counter.innerText.replace(/\D/g, ""); // remove + or text
+
+            const increment = Math.ceil(target / speed);
+
+            if (count < target) {
+              counter.innerText = count + increment + "+";
+              setTimeout(updateCount, 30);
+            } else {
+              counter.innerText = target + "+"; // final number
+            }
+          };
+          updateCount();
+          observer.unobserve(counter); // run once per counter
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(animateCounters, {
+      threshold: 0.5
+    });
+
+    counters.forEach(counter => {
+      // set target numbers as attributes
+      if (!counter.hasAttribute("data-target")) {
+        let clean = counter.innerText.replace(/\D/g, ""); 
+        counter.setAttribute("data-target", clean);
+        counter.innerText = "0+";
+      }
+      observer.observe(counter);
+    });
+  });
   </script>
 
 </body>

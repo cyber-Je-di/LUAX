@@ -6,7 +6,7 @@
 
   {% if appointment %}
     <p>Thank you <strong>{{ appointment.name }}</strong>!</p>
-    <p>Your appointment details:</p>
+    <p>Your appointment details: be sure to review them carefully. And take note of the <strong>Appointment ID</strong>.</p>
     <ul class="appointment-details">
       <li><strong>Appointment ID:</strong> {{ appointment.id or "Not specified" }}</li>
       <li><strong>Service:</strong> {{ appointment.service or "Not specified" }}</li>

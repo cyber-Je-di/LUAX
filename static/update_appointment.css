@@ -6,31 +6,47 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  animation: fadeSlide 0.8s ease forwards;
+  transform: translateY(20px);
+  opacity: 0;
 }
 
 .appointment-card h3 {
   font-size: 1.6rem;
-  color: var(--accent);
+  color: var(--accent-dark);
   margin-bottom: 1.2rem;
   text-align: center;
+  font-weight: 700;
 }
 
+/* Form inputs */
 .appt-form input,
 .appt-form select,
 .appt-form textarea {
   width: 100%;
-  padding: 0.7rem;
-  margin-bottom: 0.7rem;
-  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.9rem;
+  border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 1rem;
+  transition: border 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.appt-form input:focus,
+.appt-form select:focus,
+.appt-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(44, 122, 123, 0.15);
+  transform: scale(1.01);
 }
 
 .appt-form textarea {
-  min-height: 100px;
+  min-height: 120px;
   resize: vertical;
 }
 
+/* Layout */
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -38,23 +54,28 @@
   margin-bottom: 0.7rem;
 }
 
+/* Actions */
 .form-actions {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.8rem;
+  margin-top: 1rem;
 }
 
 .center-actions {
   justify-content: center;
 }
 
+/* Buttons */
 .btn {
   padding: 0.7rem 1.2rem;
   border-radius: 8px;
   font-size: 1rem;
+  font-weight: 600;
   text-decoration: none;
-  transition: 0.2s ease;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  cursor: pointer;
 }
 
 .btn.primary {
@@ -64,12 +85,22 @@
 
 .btn.primary:hover {
   background: var(--accent-dark);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.btn.primary:active {
+  transform: scale(0.97);
 }
 
 .btn.outline {
   background: white;
   color: var(--accent);
   border: 1px solid var(--accent);
+}
+
+.btn.outline:hover {
+  background: var(--accent-light);
 }
 
 /* Responsive */
@@ -90,6 +121,12 @@
   .btn {
     width: 100%;
     font-size: 0.95rem;
-    padding: 0.6rem;
+    padding: 0.65rem;
   }
+}
+
+/* Animations */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
