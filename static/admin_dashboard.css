@@ -34,7 +34,7 @@
 
 .appointments-table th {
   background: var(--accent);
-  color: white;
+  color: rgb(255, 255, 255);
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -54,14 +54,32 @@
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: white;
   text-align: center;
 }
 
-.status-pending { background: var(--status-pending); color: #222; }
-.status-confirmed { background: var(--status-confirmed); }
-.status-cancelled { background: var(--status-cancelled); }
-.status-completed { background: var(--status-completed); }
+/* Pending */
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Confirmed */
+.status-confirmed {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+/* Cancelled */
+.status-cancelled {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Completed */
+.status-completed {
+  background-color: #e0f2fe;
+  color: #1e40af;
+}
 
 .status-form {
   display: flex;
@@ -83,7 +101,7 @@
   border: none;
   cursor: pointer;
   background: var(--accent);
-  color: #fff;
+  color: #ffffff;
   transition: 0.2s ease;
 }
 
@@ -106,3 +124,64 @@
     width: 100%;
   }
 }
+
+/* --- Status Form Styling --- */
+.status-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.status-form select, 
+.status-form textarea {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  width: 100%;
+  resize: vertical;
+}
+
+.status-form textarea {
+  min-height: 60px;
+  font-size: 0.85rem;
+}
+
+.notify-options {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+
+.notify-options label input {
+  margin-right: 0.3rem;
+}
+
+.status-form button {
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.status-form button:hover {
+  background: var(--accent-dark);
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .status-form {
+    flex-direction: column;
+  }
+
+  .status-form button {
+    width: 100%;
+  }
+}
+

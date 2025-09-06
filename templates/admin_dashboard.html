@@ -23,27 +23,40 @@
         </tr>
       </thead>
       <tbody>
-        {% for a in appointments %}
+        {% for appt in appointments %}
         <tr>
-          <td>{{ a.id }}</td>
-          <td>{{ a.name }}</td>
-          <td>{{ a.phone }}</td>
-          <td>{{ a.service }}</td>
-          <td>{{ a.appointment_date }}</td>
-          <td>{{ a.appointment_time }}</td>
+          <td>{{ appt.id }}</td>
+          <td>{{ appt.name }}</td>
+          <td>{{ appt.phone }}</td>
+          <td>{{ appt.service }}</td>
+          <td>{{ appt.appointment_date }}</td>
+          <td>{{ appt.appointment_time }}</td>
           <td>
-            <span class="status-badge status-{{ a.status | lower }}">{{ a.status }}</span>
+            <span class="status-badge status-{{ appt.status | lower }}">{{ appt.status }}</span>
           </td>
-          <td>{{ a.created_at }}</td>
+          <td>{{ appt.created_at }}</td>
           <td>
-            <form method="POST" action="{{ url_for('change_status', appt_id=a.id) }}" class="status-form">
-              <select name="status">
-                <option {% if a.status=='Pending' %}selected{% endif %}>Pending</option>
-                <option {% if a.status=='Confirmed' %}selected{% endif %}>Confirmed</option>
-                <option {% if a.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
-                <option {% if a.status=='Completed' %}selected{% endif %}>Completed</option>
+            <form method="POST" action="{{ url_for('admin_update_status', appt_id=appt.id) }}" class="status-form">
+              
+              <select name="status" required>
+                <option value="">Select Status</option>
+                <option value="Pending" {% if appt.status=='Pending' %}selected{% endif %}>Pending</option>
+                <option value="Confirmed" {% if appt.status=='Confirmed' %}selected{% endif %}>Confirmed</option>
+                <option value="Cancelled" {% if appt.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
+                <option value="Completed" {% if appt.status=='Completed' %}selected{% endif %}>Completed</option>
               </select>
-              <button type="submit" class="btn small">Update</button>
+
+              <textarea name="custom_message" placeholder="Optional: Customize notification message">
+Hello {{ appt.name }}, your appointment for {{ appt.service }} on {{ appt.appointment_date }} at {{ appt.appointment_time }} is now {{ appt.status }}.
+              </textarea>
+
+              <div class="notify-options">
+                <label><input type="checkbox" name="notify_email" checked> Email</label>
+                <label><input type="checkbox" name="notify_sms" checked> SMS</label>
+                <label><input type="checkbox" name="notify_whatsapp" checked> WhatsApp</label>
+              </div>
+
+              <button type="submit" class="btn primary">Update Status & Notify</button>
             </form>
           </td>
         </tr>

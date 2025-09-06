@@ -5,58 +5,47 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_mail import Mail, Message
 from functools import wraps
 from dotenv import load_dotenv
+from datetime import datetime
+import re
 
 # -------------------------
 # --- CONFIGURATION SETUP ---
 # -------------------------
-
-# Base directory of the project
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Data directory for storing SQLite database
-DATA_DIR = os.path.join(BASE_DIR, "data")
-os.makedirs(DATA_DIR, exist_ok=True)
-
-# Path to SQLite database file
-DATABASE = os.path.join(DATA_DIR, "appointments.db")
-
-# Secret key for session management
-SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")
-
-# Admin password (should be changed in production)
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "adminpass")
-
-# Load environment variables from .env file
 load_dotenv()
 
-# -------------------------
-# --- FLASK APP SETUP ---
-# -------------------------
+EMAIL_ADDRESS = os.environ.get("CLINIC_EMAIL")
+EMAIL_PASSWORD = os.environ.get("CLINIC_EMAIL_PASSWORD")
+
+# Flask app
 app = Flask(__name__)
 app.config.update(
-    SECRET_KEY=SECRET_KEY,  # Secret key for session and CSRF protection
-    MAIL_SERVER='smtp.gmail.com',  # SMTP server for sending emails
-    MAIL_PORT=587,                 # SMTP port
-    MAIL_USE_TLS=True,             # Enable TLS encryption
-    MAIL_USERNAME=os.environ.get("MAIL_USERNAME"),  # Your email username
-    MAIL_PASSWORD=os.environ.get("MAIL_PASSWORD")   # Your email password
+    SECRET_KEY=os.environ.get("SECRET_KEY", "dev-secret-change-me"),
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=587,
+    MAIL_USE_TLS=True,
+    MAIL_USERNAME=EMAIL_ADDRESS,
+    MAIL_PASSWORD=EMAIL_PASSWORD
 )
-mail = Mail(app)  # Initialize Flask-Mail
+mail = Mail(app)
 
-# -------------------------
-# --- CLINIC INFORMATION ---
-# -------------------------
+# Database setup
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+os.makedirs(DATA_DIR, exist_ok=True)
+DATABASE = os.path.join(DATA_DIR, "appointments.db")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "adminpass")
+
+# Clinic info
 CLINIC = {
     "name": "LUAX Health Plus",
     "address": "Kamenza 8 Church Road, Chililabombwe, Zambia",
     "phone": "+260965318772",
     "phone_display": "+260 965 318 772",
-    "email": "luaxhealth@gmail.com",
-    "hours": "24 hour services  ."
+    "email": EMAIL_ADDRESS,
+    "hours": "24 hour services"
 }
 CLINIC["address_url"] = urllib.parse.quote_plus(CLINIC["address"])
 
-# List of services offered at the clinic
 SERVICES = [
     "General Consultation (OPD)",
     "Observation / Short-term Care",
@@ -73,22 +62,14 @@ SERVICES = [
 # -------------------------
 # --- DATABASE UTILITIES ---
 # -------------------------
-
 def get_db():
-    """
-    Returns a database connection for the current Flask request context.
-    Ensures only one connection per request.
-    """
     db = getattr(g, "_database", None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE, detect_types=sqlite3.PARSE_DECLTYPES)
-        db.row_factory = sqlite3.Row  # Allow accessing columns by name
+        db.row_factory = sqlite3.Row
     return db
 
 def init_db():
-    """
-    Initializes the appointments table if it doesn't exist.
-    """
     db = get_db()
     db.execute("""
         CREATE TABLE IF NOT EXISTS appointments (
@@ -108,22 +89,38 @@ def init_db():
 
 @app.teardown_appcontext
 def close_connection(exception):
-    """
-    Closes the database connection at the end of a request.
-    """
     db = getattr(g, "_database", None)
     if db is not None:
         db.close()
 
+@app.context_processor
+def inject_now():
+    return {'current_year': datetime.now().year}
+
 # -------------------------
-# --- ADMIN AUTH DECORATOR ---
+# --- UTILITY FUNCTIONS ---
 # -------------------------
+def is_valid_email(email):
+    pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    return re.match(pattern, email) is not None
+
+def send_email(recipient, subject, message):
+    if not is_valid_email(recipient):
+        print(f"❌ Invalid email: {recipient}")
+        return
+    try:
+        email_msg = Message(
+            subject=subject,
+            body=message,
+            sender=EMAIL_ADDRESS,
+            recipients=[recipient]
+        )
+        mail.send(email_msg)
+        print(f"✅ Email sent to {recipient}")
+    except Exception as e:
+        print(f"❌ Email failed: {e}")
 
 def admin_required(fn):
-    """
-    Decorator to protect routes that require admin login.
-    Redirects to login page if admin is not authenticated.
-    """
     @wraps(fn)
     def wrapper(*args, **kwargs):
         if not session.get("admin_authenticated"):
@@ -133,87 +130,58 @@ def admin_required(fn):
     return wrapper
 
 # -------------------------
-# --- USER-FACING ROUTES ---
+# --- ROUTES ---
 # -------------------------
-
 @app.route("/", methods=["GET", "POST"])
 def index():
-    """
-    Homepage: Displays appointment form and handles submission.
-    """
     if request.method == "POST":
-        # Collect form data
-        name = request.form.get("name", "").strip()
+        name = request.form["name"].strip()
         email = request.form.get("email", "").strip()
         phone = request.form.get("phone", "").strip()
-        service = request.form.get("service", "")
-        appointment_date = request.form.get("date", "")
-        appointment_time = request.form.get("time", "")
+        service = request.form["service"]
+        appointment_date = request.form["date"]
+        appointment_time = request.form["time"]
         message = request.form.get("message", "").strip()
 
-        # Basic validation
-        if not name or not phone or not appointment_date:
-            flash("Please fill name, phone and date.", "danger")
-            return redirect(url_for("index"))
-
-        # Insert new appointment into the database
         db = get_db()
         cur = db.execute("""
-            INSERT INTO appointments (name, email, phone, service, appointment_date, appointment_time, message)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (name, email, phone, service, appointment_date, appointment_time, message))
+            INSERT INTO appointments
+            (name, email, phone, service, appointment_date, appointment_time, message, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (name, email, phone, service, appointment_date, appointment_time, message, "Pending"))
         db.commit()
-
-        appt_id = cur.lastrowid  # Get the ID of the new appointment
+        appt_id = cur.lastrowid
         return redirect(url_for("success", appt_id=appt_id))
-
-    # Render index page with services list and clinic info
     return render_template("index.html", clinic=CLINIC, services=SERVICES)
 
 @app.route("/success")
 def success():
-    """
-    Success page: Shows appointment details after booking.
-    """
     appt_id = request.args.get("appt_id")
     appointment = None
     if appt_id:
         db = get_db()
-        appointment = db.execute("SELECT * FROM appointments WHERE id = ?", (appt_id,)).fetchone()
+        appointment = db.execute("SELECT * FROM appointments WHERE id=?", (appt_id,)).fetchone()
     return render_template("success.html", clinic=CLINIC, appointment=appointment)
 
 @app.route("/appointment/<int:appt_id>/cancel", methods=["POST"])
 def cancel_appointment(appt_id):
-    """
-    Cancel appointment route.
-    Deletes the appointment from the database completely.
-    """
     db = get_db()
     db.execute("DELETE FROM appointments WHERE id=?", (appt_id,))
     db.commit()
-    flash("Your appointment has been cancelled and removed.", "success")
+    flash("Your appointment has been cancelled.", "success")
     return redirect(url_for("index"))
 
 @app.route("/appointment/<int:appt_id>/update", methods=["GET", "POST"])
 def update_appointment(appt_id):
-    """
-    Update appointment route.
-    GET: Shows form pre-filled with existing appointment data.
-    POST: Updates appointment in the database.
-    """
     db = get_db()
     appointment = db.execute("SELECT * FROM appointments WHERE id=?", (appt_id,)).fetchone()
-
     if request.method == "POST":
-        # Collect updated form data
         name = request.form.get("name", "").strip()
         phone = request.form.get("phone", "").strip()
         service = request.form.get("service", "")
         appointment_date = request.form.get("date", "")
         appointment_time = request.form.get("time", "")
         message = request.form.get("message", "").strip()
-
-        # Update appointment in the database
         db.execute("""
             UPDATE appointments
             SET name=?, phone=?, service=?, appointment_date=?, appointment_time=?, message=?
@@ -221,19 +189,11 @@ def update_appointment(appt_id):
         """, (name, phone, service, appointment_date, appointment_time, message, appt_id))
         db.commit()
         return redirect(url_for("success", appt_id=appt_id))
-
-    # Render update form
     return render_template("update_appointment.html", appointment=appointment, services=SERVICES, clinic=CLINIC)
 
-# -------------------------
-# --- ADMIN ROUTES ---
-# -------------------------
-
+# Admin routes
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
-    """
-    Admin login page. Validates password and sets session.
-    """
     if request.method == "POST":
         pwd = request.form.get("password", "")
         if pwd == ADMIN_PASSWORD:
@@ -241,16 +201,12 @@ def admin_login():
             flash("Logged in successfully!", "success")
             return redirect(url_for("admin_dashboard"))
         else:
-            flash("Invalid admin password", "danger")
+            flash("Invalid password", "danger")
             return redirect(url_for("admin_login"))
-
     return render_template("admin_login.html", clinic=CLINIC)
 
 @app.route("/admin/logout")
 def admin_logout():
-    """
-    Logs out the admin by clearing session.
-    """
     session.pop("admin_authenticated", None)
     flash("Logged out successfully.", "success")
     return redirect(url_for("admin_login"))
@@ -258,88 +214,67 @@ def admin_logout():
 @app.route("/admin")
 @admin_required
 def admin_dashboard():
-    """
-    Admin dashboard: Shows all appointments.
-    """
     db = get_db()
     appointments = db.execute("SELECT * FROM appointments ORDER BY created_at DESC").fetchall()
     return render_template("admin_dashboard.html", appointments=appointments, clinic=CLINIC)
 
-@app.route("/admin/appointment/<int:appt_id>/status", methods=["POST"])
+@app.route("/admin/update_status/<int:appt_id>", methods=["POST"])
 @admin_required
-def change_status(appt_id):
-    """
-    Admin can change the status of an appointment.
-    Sends an email to the user notifying them of the status change.
-    """
-    new_status = request.form.get("status", "Pending")
+def admin_update_status(appt_id):
+    new_status = request.form.get("status")
+    custom_message = request.form.get("custom_message", "").strip()
+    notify_email = request.form.get("notify_email")
+
     db = get_db()
-    db.execute("UPDATE appointments SET status = ? WHERE id = ?", (new_status, appt_id))
+    db.execute("UPDATE appointments SET status=? WHERE id=?", (new_status, appt_id))
     db.commit()
 
-    # Send email to user
-    appointment = db.execute("SELECT * FROM appointments WHERE id = ?", (appt_id,)).fetchone()
-    if appointment and appointment["email"]:
-        try:
-            msg = Message(
-                subject="Your Appointment Status Has Changed",
-                recipients=[appointment["email"]],
-                body=f"Hello {appointment['name']},\n\n"
-                     f"Your appointment on {appointment['appointment_date']} "
-                     f"for {appointment['service']} has been {new_status}.\n\n"
-                     f"Thank you,\n{CLINIC['name']}"
-            )
-            mail.send(msg)
-        except Exception as e:
-            print("Email failed:", e)
+    appointment = db.execute("SELECT * FROM appointments WHERE id=?", (appt_id,)).fetchone()
+    if not appointment:
+        flash("Appointment not found.", "danger")
+        return redirect(url_for("admin_dashboard"))
 
+    msg = custom_message or (
+        f"Hello {appointment['name']},\n\n"
+        f"Your appointment (ID: {appointment['id']}) for {appointment['service']} "
+        f"on {appointment['appointment_date']} at {appointment['appointment_time']} "
+        f"is now {new_status}.\n\nThank you for choosing our clinic!"
+    )
+
+    # Send email if requested
+    if notify_email and appointment["email"]:
+        send_email(appointment["email"], f"Appointment Status Update: {new_status}", msg)
+
+    flash("Appointment status updated and notifications sent!", "success")
     return redirect(url_for("admin_dashboard"))
-
-# -------------------------
-# --- USER CHECK STATUS ---
-# -------------------------
 
 @app.route("/check_status", methods=["GET", "POST"])
 def check_status():
-    """
-    Allows a user to check appointment status using appointment ID or phone number.
-    GET with appt_id: directly retrieves the appointment.
-    POST: retrieves appointment from form input (ID or phone).
-    """
     appointment = None
     error = None
     appt_id = request.args.get("appt_id")
-    
     db = get_db()
 
     if request.method == "POST":
-        # Retrieve form data
         appt_id = request.form.get("appt_id", "").strip()
         phone = request.form.get("phone", "").strip()
-        
         if appt_id:
             appointment = db.execute("SELECT * FROM appointments WHERE id=?", (appt_id,)).fetchone()
         elif phone:
             appointment = db.execute("SELECT * FROM appointments WHERE phone=?", (phone,)).fetchone()
-        
         if not appointment:
-            error = "No appointment found with that ID and phone number. Please check your inputs."
-    
-    elif appt_id:  # GET request with appointment ID in URL
+            error = "No appointment found. Please check your inputs."
+    elif appt_id:
         appointment = db.execute("SELECT * FROM appointments WHERE id=?", (appt_id,)).fetchone()
         if not appointment:
             error = "No appointment found with this ID."
 
-    # Pass clinic info so base.html can use it
     return render_template("check_status.html", appointment=appointment, error=error, clinic=CLINIC)
-
 
 # -------------------------
 # --- MAIN ENTRY POINT ---
 # -------------------------
 if __name__ == "__main__":
-    # Initialize database if it doesn't exist
     with app.app_context():
         init_db()
-    # Run the Flask server
     app.run(host="0.0.0.0", port=5000, debug=True)

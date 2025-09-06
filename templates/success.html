@@ -8,6 +8,7 @@
     <p>Thank you <strong>{{ appointment.name }}</strong>!</p>
     <p>Your appointment details:</p>
     <ul class="appointment-details">
+      <li><strong>Appointment ID:</strong> {{ appointment.id or "Not specified" }}</li>
       <li><strong>Service:</strong> {{ appointment.service or "Not specified" }}</li>
       <li><strong>Date:</strong> {{ appointment.appointment_date }}</li>
       <li><strong>Time:</strong> {{ appointment.appointment_time or "Not specified" }}</li>

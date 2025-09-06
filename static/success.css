@@ -73,25 +73,31 @@
   border-radius: 12px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: white;
   text-align: center;
 }
 
+/* Pending */
 .status-pending {
-  background: var(--status-pending);
-  color: #222;
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
+/* Confirmed */
 .status-confirmed {
-  background: var(--status-confirmed);
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
+/* Cancelled */
 .status-cancelled {
-  background: var(--status-cancelled);
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
+/* Completed */
 .status-completed {
-  background: var(--status-completed);
+  background-color: #e0f2fe;
+  color: #1e40af;
 }
 
 /* Responsive */

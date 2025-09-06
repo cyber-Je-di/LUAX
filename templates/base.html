@@ -8,6 +8,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin_login.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='success.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='update_appointment.css') }}">
 </head>
 <body>
 
@@ -29,10 +33,6 @@
         <a href="{{ url_for('check_status') }}">Check Status</a>
         <a href="{{ url_for('admin_dashboard') }}" class="btn primary mobile-only" style="margin-top:1rem;">Admin Login</a>
       </nav>
-
-      <div class="header-actions">
-        <a href="{{ url_for('admin_dashboard') }}" class="btn outline">Admin Login</a>
-      </div>
 
       <button class="hamburger" id="hamburger">
         <span class="bar"></span>
@@ -75,7 +75,7 @@
       </div>
     </div>
     <div class="container footer-bottom">
-      <p>&copy; {{ "now" | strftime("%Y") }} {{ clinic.name }}. All Rights Reserved.</p>
+      <p>&copy; {{ current_year }} {{ clinic.name }}. All Rights Reserved.</p>
     </div>
   </footer>
 

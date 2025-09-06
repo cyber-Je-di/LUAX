@@ -62,9 +62,22 @@
     <h2>Book an Appointment</h2>
     <form method="POST" class="appt-form">
       <div class="form-group">
-        <input name="name" placeholder="Full name" required>
-        <input name="phone" placeholder="Phone number" required>
+        <!-- Name field: only letters allowed -->
+        <input name="name" placeholder="Full name" pattern="[A-Za-z\s]+" title="Only letters allowed" required>
+
+        <!-- Phone field with country selector -->
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <select name="country_code" required>
+            <option value="+260">🇿🇲 +260</option>
+            <option value="+27">🇿🇦 +27</option>
+            <option value="+255">🇹🇿 +255</option>
+            <option value="+256">🇺🇬 +256</option>
+            <option value="+254">🇰🇪 +254</option>
+          </select>
+          <input name="phone" type="tel" placeholder="Phone number" pattern="[0-9]{6,12}" title="Enter digits only" required>
+        </div>
       </div>
+
       <div class="form-group">
         <input name="email" type="email" placeholder="Email (optional)">
         <select name="service">
@@ -72,11 +85,17 @@
           {% for s in services %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
         </select>
       </div>
+
       <div class="form-group">
-        <input type="date" name="date" required>
-        <input type="time" name="time">
+        <label for="date" style="font-size:0.9rem; color:var(--text-dark);">Appointment Date</label>
+        <input id="date" type="date" name="date" required>
+
+        <label for="time" style="font-size:0.9rem; color:var(--text-dark);">Appointment Time</label>
+        <input id="time" type="time" name="time">
       </div>
+
       <textarea name="message" placeholder="Reason for visit (optional)"></textarea>
+
       <div class="form-actions">
         <button type="submit" class="btn primary">Submit Booking</button>
         <a class="btn outline" href="https://wa.me/260965318772?text=I%20want%20to%20book%20an%20appointment" target="_blank">

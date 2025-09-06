@@ -293,7 +293,7 @@ section:nth-child(even) {
   width: 50px;
   height: 50px;
   margin-bottom: 1rem;
-  filter: grayscale(100%) brightness(1.5) contrast(0.1);
+  filter: none;
   opacity: 0.6;
   transition: all 0.3s ease;
 }
@@ -379,6 +379,41 @@ section:nth-child(even) {
     display: none; /* Hide button in nav, show in mobile menu */
   }
 }
+
+/* Status badge styles */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* Pending */
+.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+/* Confirmed */
+.status-confirmed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+/* Cancelled */
+.status-cancelled {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Completed */
+.status-completed {
+    background-color: #e0f2fe;
+    color: #1e40af;
+}
+
 
 @media (max-width: 768px) {
   h1 { font-size: 2rem; }
