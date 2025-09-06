@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="success-card">
+    <h3>Check Appointment Status</h3>
+
+    <form method="POST" class="appt-form" style="margin-bottom:1.5rem;">
+        <div class="two-col">
+            <input name="appt_id" placeholder="Appointment ID" value="{{ request.form.appt_id or '' }}">
+            <input name="phone" placeholder="Phone number" value="{{ request.form.phone or '' }}">
+        </div>
+        <div class="form-actions" style="justify-content:center;">
+            <button type="submit" class="btn primary">Check Status</button>
+        </div>
+    </form>
+
+    {% if appointment %}
+        <p>Appointment details for <strong>{{ appointment.name }}</strong> (ID: <strong>{{ appointment.id }}</strong>):</p>
+        <ul>
+            <li><strong>Service:</strong> {{ appointment.service or "Not specified" }}</li>
+            <li><strong>Date:</strong> {{ appointment.appointment_date }}</li>
+            <li><strong>Time:</strong> {{ appointment.appointment_time or "Not specified" }}</li>
+            <li><strong>Phone:</strong> {{ appointment.phone }}</li>
+            <li><strong>Email:</strong> {{ appointment.email or "Not provided" }}</li>
+            {% if appointment.message %}
+            <li><strong>Notes:</strong> {{ appointment.message }}</li>
+            {% endif %}
+            <li>
+                <strong>Status:</strong>
+                <span class="status-badge 
+                {% if appointment.status=='Pending' %}status-pending
+                {% elif appointment.status=='Confirmed' %}status-confirmed
+                {% elif appointment.status=='Cancelled' %}status-cancelled
+                {% else %}status-completed{% endif %}">
+                    {{ appointment.status }}
+                </span>
+            </li>
+        </ul>
+
+        <div class="form-actions" style="justify-content:center;margin-top:1rem;">
+            <a class="btn primary" href="{{ url_for('update_appointment', appt_id=appointment.id) }}">Update Appointment</a>
+            <form method="POST" action="{{ url_for('cancel_appointment', appt_id=appointment.id) }}" style="display:inline;">
+                <button type="submit" class="btn outline">Cancel Appointment</button>
+            </form>
+        </div>
+
+    {% elif error %}
+        <p style="color:#e53e3e; text-align:center; font-weight:600;">{{ error }}</p>
+    {% endif %}
+</div>
+
+{% endblock %}

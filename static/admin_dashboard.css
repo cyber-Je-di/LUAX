@@ -1,0 +1,108 @@
+/* --- Admin Dashboard Styles --- */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.dashboard-header h1 {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  background: #fff;
+}
+
+.appointments-table th,
+.appointments-table td {
+  padding: 0.8rem 0.6rem;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.appointments-table th {
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.appointments-table tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.appointments-table tr:hover {
+  background: #e6fffa;
+  transition: 0.2s ease;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+}
+
+.status-pending { background: var(--status-pending); color: #222; }
+.status-confirmed { background: var(--status-confirmed); }
+.status-cancelled { background: var(--status-cancelled); }
+.status-completed { background: var(--status-completed); }
+
+.status-form {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.status-form select {
+  padding: 0.3rem 0.5rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.status-form button {
+  padding: 0.3rem 0.5rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  transition: 0.2s ease;
+}
+
+.status-form button:hover {
+  background: var(--accent-dark);
+}
+
+/* RESPONSIVE TABLE */
+@media (max-width: 768px) {
+  .appointments-table th, .appointments-table td {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.3rem;
+  }
+
+  .status-form {
+    flex-direction: column;
+  }
+
+  .status-form button {
+    width: 100%;
+  }
+}

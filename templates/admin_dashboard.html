@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+  <header class="dashboard-header">
+    <h1>Appointments Dashboard</h1>
+    <a class="btn outline" href="{{ url_for('admin_logout') }}">Logout</a>
+  </header>
+
+  <div class="table-container">
+    <table class="appointments-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Service</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+          <td>{{ a.id }}</td>
+          <td>{{ a.name }}</td>
+          <td>{{ a.phone }}</td>
+          <td>{{ a.service }}</td>
+          <td>{{ a.appointment_date }}</td>
+          <td>{{ a.appointment_time }}</td>
+          <td>
+            <span class="status-badge status-{{ a.status | lower }}">{{ a.status }}</span>
+          </td>
+          <td>{{ a.created_at }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('change_status', appt_id=a.id) }}" class="status-form">
+              <select name="status">
+                <option {% if a.status=='Pending' %}selected{% endif %}>Pending</option>
+                <option {% if a.status=='Confirmed' %}selected{% endif %}>Confirmed</option>
+                <option {% if a.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
+                <option {% if a.status=='Completed' %}selected{% endif %}>Completed</option>
+              </select>
+              <button type="submit" class="btn small">Update</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

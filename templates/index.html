@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Your Health, <span>Our Priority</span></h1>
+    <p>Compassionate, timely healthcare — in-clinic and through mobile outreach.</p>
+    <a class="btn primary" href="#appointment">Book an Appointment</a>
+    <div class="form-actions">
+  <a class="btn outline" href="{{ url_for('check_status') }}">Check AppointmentStatus</a>
+</div>
+
+  </div>
+</section>
+
+<section id="services" class="services">
+  <h2>Our Services</h2>
+  <div class="grid services-grid">
+    {% for s in services %}
+    <div class="service-card">
+      <p>{{ s }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="team" class="team">
+  <h2>Meet the Team</h2>
+  <div class="grid team-grid">
+
+    <div class="team-card">
+      <img src="{{ url_for('static', filename='images/axon.jpeg') }}" alt="Axon Lungu Junior" class="team-photo">
+      <strong>Axon Lungu Junior</strong>
+      <small>Director</small>
+    </div>
+
+    <div class="team-card">
+      <img src="{{ url_for('static', filename='images/lupiya.jpeg') }}" alt="Dr. Lupiya Kambole" class="team-photo">
+      <strong>Dr. Lupiya Kambole</strong>
+      <small>Supervising Medical Doctor</small>
+    </div>
+
+    <div class="team-card">
+      <img src="{{ url_for('static', filename='images/mbita.jpeg') }}" alt="Dr. Mbita Mwelwa" class="team-photo">
+      <strong>Dr. Mbita Mwelwa</strong>
+      <small>Dental Surgeon</small>
+    </div>
+
+    <div class="team-card">
+      <img src="{{ url_for('static', filename='images/florence.jpeg') }}" alt="Florence Chirwa" class="team-photo">
+      <strong>Florence Chirwa</strong>
+      <small>Clinic Operations Manager</small>
+    </div>
+
+  </div>
+</section>
+
+
+<section id="appointment" class="appointment">
+  <h2>Book an Appointment</h2>
+  <form method="POST" class="appt-form">
+    <div class="two-col">
+      <input name="name" placeholder="Full name" required>
+      <input name="phone" placeholder="Phone number" required>
+    </div>
+    <div class="two-col">
+      <input name="email" placeholder="Email (optional)">
+      <select name="service">
+        <option value="">Select Service (optional)</option>
+        {% for s in services %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="two-col">
+      <input type="date" name="date" required>
+      <input type="time" name="time">
+    </div>
+    <textarea name="message" placeholder="Reason for visit (optional)"></textarea>
+    <div class="form-actions">
+      <button type="submit" class="btn primary">Submit Booking</button>
+      <a class="btn outline" 
+         href="https://wa.me/260965318772?text=I%20want%20to%20book%20an%20appointment" 
+         target="_blank">
+         Book by WhatsApp
+      </a>
+    </div>
+  </form>
+</section>
+
+<section class="quick-info">
+  <h2>Quick Info</h2>
+  <div class="grid quick-grid">
+
+    <!-- Call Us Card -->
+    <a href="tel:{{ clinic.phone }}" class="info-card clickable">
+      <img src="{{ url_for('static', filename='icons/phone.png') }}" alt="Phone" class="info-icon">
+      <h3>Call Us</h3>
+      <p><strong>{{ clinic.phone_display }}</strong></p>
+    </a>
+
+    <!-- Email Card -->
+    <a href="mailto:{{ clinic.email }}" class="info-card clickable">
+      <img src="{{ url_for('static', filename='icons/email.png') }}" alt="Email" class="info-icon">
+      <h3>Email</h3>
+      <p><strong>{{ clinic.email }}</strong></p>
+    </a>
+
+    <!-- Visit Us Card -->
+    <a href="https://www.google.com/maps/search/?api=1&query={{ clinic.address_url }}" target="_blank" class="info-card clickable">
+      <img src="{{ url_for('static', filename='icons/location.png') }}" alt="Location" class="info-icon">
+      <h3>Visit Us</h3>
+      <p>{{ clinic.address }}</p>
+    </a>
+
+    <!-- Opening Hours Card -->
+    <div class="info-card non-clickable">
+      <img src="{{ url_for('static', filename='icons/clock.png') }}" alt="Hours" class="info-icon">
+      <h3>Opening Hours</h3>
+      <p>{{ clinic.hours }}</p>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

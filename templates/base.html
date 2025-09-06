@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ clinic.name }} — Healthcare made personal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin_login.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='success.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='update_appointment.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="logo">🌿</div>
+        <div>
+          <h1 class="clinic-name">{{ clinic.name }}</h1>
+          <div class="clinic-sub">{{ clinic.address }}</div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="header-actions">
+          <a class="pill" href="tel:{{ clinic.phone }}">Call {{ clinic.phone_display }}</a>
+          <a class="pill outline" href="mailto:{{ clinic.email }}">Email</a>
+          <a class="pill whatsapp" href="https://wa.me/{{ clinic.phone | replace('+','') }}">WhatsApp</a>
+        </div>
+
+        <!-- Hamburger Icon -->
+        <div class="hamburger" id="hamburger">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav-menu">
+      <div class="container nav-links">
+        <a href="/">Home</a>
+        <a href="#services">Services</a>
+        <a href="#team">Team</a>
+        <a href="#appointment">Book Appointment</a>
+        <a href="/admin" class="admin-link">Admin</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <h3>{{ clinic.name }}</h3>
+        <p>Compassionate healthcare, wherever you are.</p>
+      </div>
+      <div class="footer-links">
+        <div class="contact-info">
+          <p>Phone: <a href="tel:{{ clinic.phone }}">{{ clinic.phone_display }}</a></p>
+          <p>Email: <a href="mailto:{{ clinic.email }}">{{ clinic.email }}</a></p>
+          <p>Address: {{ clinic.address }}</p>
+        </div>
+        <div class="social-icons">
+          <a href="https://facebook.com" target="_blank" class="social-icon fb">Facebook</a>
+          <a href="https://twitter.com" target="_blank" class="social-icon tw">Twitter</a>
+          <a href="https://instagram.com" target="_blank" class="social-icon ig">Instagram</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © {{ clinic.name }} — All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS for Hamburger -->
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      navMenu.classList.toggle('active');
+    });
+  </script>
+</body>
+</html>

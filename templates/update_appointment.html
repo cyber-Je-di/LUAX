@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="appointment-card success-card">
+    <h3>Update Appointment</h3>
+    <form method="POST" class="appt-form">
+        <div class="two-col">
+            <input name="name" value="{{ appointment.name }}" placeholder="Full name" required>
+            <input name="phone" value="{{ appointment.phone }}" placeholder="Phone number" required>
+        </div>
+        <div class="two-col">
+            <input name="email" value="{{ appointment.email }}" placeholder="Email (optional)">
+            <select name="service">
+                <option value="">Select Service (optional)</option>
+                {% for s in services %}
+                <option value="{{ s }}" {% if appointment.service==s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="two-col">
+            <input type="date" name="date" value="{{ appointment.appointment_date }}" required>
+            <input type="time" name="time" value="{{ appointment.appointment_time }}">
+        </div>
+        <textarea name="message" placeholder="Reason for visit (optional)">{{ appointment.message }}</textarea>
+        <div class="form-actions center-actions">
+            <button type="submit" class="btn primary">Update Appointment</button>
+            <a class="btn outline" href="{{ url_for('success', appt_id=appointment.id) }}">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

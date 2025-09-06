@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="success-card">
+  <h3>Appointment Confirmed!</h3>
+
+  {% if appointment %}
+    <p>Thank you <strong>{{ appointment.name }}</strong>!</p>
+    <p>Your appointment details:</p>
+    <ul class="appointment-details">
+      <li><strong>Service:</strong> {{ appointment.service or "Not specified" }}</li>
+      <li><strong>Date:</strong> {{ appointment.appointment_date }}</li>
+      <li><strong>Time:</strong> {{ appointment.appointment_time or "Not specified" }}</li>
+      <li><strong>Phone:</strong> {{ appointment.phone }}</li>
+      <li><strong>Email:</strong> {{ appointment.email or "Not provided" }}</li>
+      {% if appointment.message %}
+        <li><strong>Notes:</strong> {{ appointment.message }}</li>
+      {% endif %}
+      <li>
+        <strong>Status:</strong>
+        <span class="status-badge 
+          {% if appointment.status=='Pending' %}status-pending
+          {% elif appointment.status=='Confirmed' %}status-confirmed
+          {% elif appointment.status=='Cancelled' %}status-cancelled
+          {% else %}status-completed{% endif %}">
+          {{ appointment.status }}
+        </span>
+      </li>
+    </ul>
+
+    <div class="form-actions center-actions">
+      <a class="btn primary" href="{{ url_for('update_appointment', appt_id=appointment.id) }}">Update Appointment</a>
+      <form method="POST" action="{{ url_for('cancel_appointment', appt_id=appointment.id) }}">
+        <button type="submit" class="btn outline">Cancel Appointment</button>
+      </form>
+    </div>
+
+    <form method="GET" action="{{ url_for('success') }}" class="center-actions">
+      <input type="hidden" name="appt_id" value="{{ appointment.id }}">
+      <button type="submit" class="btn outline">Refresh Status</button>
+    </form>
+
+  {% else %}
+    <p>Your appointment has been received. Thank you!</p>
+  {% endif %}
+
+  <a class="btn" href="{{ url_for('index') }}" style="margin-top:1rem; display:inline-block;">Back to Home</a>
+</div>
+
+{% endblock %}

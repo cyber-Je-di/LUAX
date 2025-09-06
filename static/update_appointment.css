@@ -1,0 +1,95 @@
+/* --- Update Appointment Page --- */
+.appointment-card {
+  max-width: 520px;
+  margin: 2.5rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.appointment-card h3 {
+  font-size: 1.6rem;
+  color: var(--accent);
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+.appt-form input,
+.appt-form select,
+.appt-form textarea {
+  width: 100%;
+  padding: 0.7rem;
+  margin-bottom: 0.7rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+.appt-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-bottom: 0.7rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.center-actions {
+  justify-content: center;
+}
+
+.btn {
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn.primary:hover {
+  background: var(--accent-dark);
+}
+
+.btn.outline {
+  background: white;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .appointment-card {
+    margin: 2rem 1rem;
+    padding: 1.5rem;
+  }
+
+  .appointment-card h3 {
+    font-size: 1.4rem;
+  }
+
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .btn {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 0.6rem;
+  }
+}
