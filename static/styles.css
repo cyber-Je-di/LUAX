@@ -53,7 +53,6 @@ body {
 }
 .mobile-only {
   position: relative;
-  /* Adjustments to position the badge correctly */
 }
 
 .header-actions {
@@ -82,7 +81,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-
 
 /* Section reveal animation */
 section {
@@ -304,28 +302,55 @@ a:hover { color: var(--accent-dark); }
   color: var(--white);
 }
 
-/* Responsive: stack buttons on mobile */
+/* -------------------------
+   * MOBILE NAVIGATION & ANIMATION
+------------------------- */
 @media (max-width: 992px) {
   .main-nav {
-    display: none;
+    display: flex;
     flex-direction: column;
     position: absolute;
     top: 75px;
     left: 0;
     width: 100%;
     background-color: var(--white);
-    padding: 1rem 0;
+    max-height: 0;
+    padding: 0;
+    overflow: hidden;
     box-shadow: 0 8px 16px var(--shadow);
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    z-index: 100;
   }
+
   .main-nav.active {
-    display: flex;
+    max-height: 500px; /* adjust to fit links + buttons */
+    padding: 1rem 0;
+  }
+
+  .main-nav a,
+  .header-actions .btn {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .main-nav.active a,
+  .main-nav.active .header-actions .btn {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .header-actions {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 0.5rem;
-    padding: 1rem 0;
+    padding: 0 1rem 1rem 1rem;
+  }
+
+  .header-actions .btn {
+    width: 100%;
+    text-align: center;
+    margin: 0;
   }
 
   .hamburger {
@@ -559,6 +584,7 @@ a:hover { color: var(--accent-dark); }
   color: rgba(255, 255, 255, 0.6);
 }
 
+
 /* -------------------------
    * RESPONSIVE DESIGN
 ------------------------- */
@@ -580,6 +606,7 @@ a:hover { color: var(--accent-dark); }
   .hamburger {
     display: block;
   }
+
 @media (max-width: 992px) {
   .header-actions .btn {
     display: block; /* show buttons inside the hamburger menu */
@@ -593,6 +620,20 @@ a:hover { color: var(--accent-dark); }
     gap: 0.5rem;
     padding: 1rem;
   }
+
+  .main-nav a,
+.header-actions .btn {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.main-nav.active a,
+.main-nav.active .header-actions .btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 }
 
 }
