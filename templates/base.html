@@ -25,14 +25,19 @@
         </div>
       </a>
 
-      <nav class="main-nav" id="main-nav">
-        <a href="/">Home</a>
-        <a href="/#services">Services</a>
-        <a href="/#team">Team</a>
-        <a href="/#appointment">Book</a>
-        <a href="{{ url_for('check_status') }}">Check Status</a>
-        <a href="{{ url_for('admin_dashboard') }}" class="btn primary mobile-only" style="margin-top:1rem;">Admin Login</a>
-      </nav>
+<nav class="main-nav" id="main-nav">
+  <a href="/">Home</a>
+  <a href="/#services">Services</a>
+  <a href="/#team">Team</a>
+  <a href="/#appointment">Book</a>
+  <a href="{{ url_for('check_status') }}">Check Status</a>
+  <a href="{{ url_for('admin_login') }}" class="btn primary mobile-only" style="margin-top:1rem;">
+    Admin Login
+    {% if unread_count > 0 %}
+      <span class="notification-badge">{{ unread_count }}</span>
+    {% endif %}
+  </a>
+</nav>
 
       <button class="hamburger" id="hamburger">
         <span class="bar"></span>

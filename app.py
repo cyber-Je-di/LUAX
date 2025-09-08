@@ -6,6 +6,7 @@ from flask_mail import Mail, Message
 from functools import wraps
 from dotenv import load_dotenv
 from datetime import datetime
+import smtplib
 import re
 
 # -------------------------
@@ -82,6 +83,7 @@ def init_db():
             appointment_time TEXT,
             message TEXT,
             status TEXT DEFAULT 'Pending',
+            is_read INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -129,6 +131,18 @@ def admin_required(fn):
         return fn(*args, **kwargs)
     return wrapper
 
+# Add this new function
+def get_unread_count():
+    db = get_db()
+    count = db.execute("SELECT COUNT(*) FROM appointments WHERE is_read = 0").fetchone()[0]
+    return count
+
+# Add this context processor
+@app.context_processor
+def inject_notifications():
+    unread_count = get_unread_count()
+    return {'current_year': datetime.now().year, 'unread_count': unread_count}
+
 # -------------------------
 # --- ROUTES ---
 # -------------------------
@@ -151,6 +165,33 @@ def index():
         """, (name, email, phone, service, appointment_date, appointment_time, message, "Pending"))
         db.commit()
         appt_id = cur.lastrowid
+
+        # --- ADD THIS SECTION TO SEND EMAILS ---
+        # Send confirmation email to the patient
+        if email:
+            patient_subject = "Appointment Confirmation"
+            patient_message = (
+                f"Hello {name},\n\n"
+                f"Your appointment for {service} on {appointment_date} at {appointment_time} "
+                f"has been successfully booked. We'll be in touch soon to confirm details.\n\n"
+                f"Thank you!\nLUAX Health Plus"
+            )
+            send_email(email, patient_subject, patient_message)
+
+        # Notify the admin of a new booking
+        admin_subject = "New Appointment Booked"
+        admin_message = (
+            f"A new appointment has been booked.\n\n"
+            f"Patient Name: {name}\n"
+            f"Service: {service}\n"
+            f"Date: {appointment_date}\n"
+            f"Time: {appointment_time}\n"
+            f"Email: {email or 'N/A'}\n"
+            f"Phone: {phone or 'N/A'}"
+        )
+        send_email(os.environ.get("CLINIC_EMAIL"), admin_subject, admin_message)
+        # --- END OF NEW SECTION ---
+
         return redirect(url_for("success", appt_id=appt_id))
     return render_template("index.html", clinic=CLINIC, services=SERVICES)
 
@@ -215,6 +256,11 @@ def admin_logout():
 @admin_required
 def admin_dashboard():
     db = get_db()
+    
+    # Mark all unread appointments as read when the admin dashboard is accessed
+    db.execute("UPDATE appointments SET is_read = 1 WHERE is_read = 0")
+    db.commit()
+    
     appointments = db.execute("SELECT * FROM appointments ORDER BY created_at DESC").fetchall()
     return render_template("admin_dashboard.html", appointments=appointments, clinic=CLINIC)
 

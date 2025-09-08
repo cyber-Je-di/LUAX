@@ -35,6 +35,27 @@ body {
   font-size: 16px;
 }
 
+/* Add this CSS to your styles.css for the badge */
+.notification-badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 4px 8px;
+  font-size: 0.8em;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 24px;
+  height: 24px;
+}
+.mobile-only {
+  position: relative;
+  /* Adjustments to position the badge correctly */
+}
+
 /* Section reveal animation */
 section {
   padding: 4rem 0;
