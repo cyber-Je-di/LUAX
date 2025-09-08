@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 from datetime import datetime
 import smtplib
 import re
+import sys
+
+
 
 # -------------------------
 # --- CONFIGURATION SETUP ---
