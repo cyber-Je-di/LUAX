@@ -177,6 +177,7 @@ a:hover { color: var(--accent-dark); }
   padding-bottom: 0.25rem;
   border-bottom: 2px solid transparent;
   transition: all 0.3s ease;
+  padding-left: 20px;
 }
 
 .main-nav a:hover, .main-nav a.active {
@@ -244,6 +245,7 @@ a:hover { color: var(--accent-dark); }
 .btn.outline:hover {
   background-color: var(--accent);
   color: var(--white);
+  transform: translateY(-2px) scale(1.03);
 }
 
 /* -------------------------
