@@ -10,7 +10,7 @@ DATABASE = os.path.join(DATA_DIR, "Luax_DB.db")
 def get_db():
     db = getattr(g, "_database", None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE, detect_types=sqlite3.PARSE_DECLTYPES)
+        db = g._database = sqlite3.connect(DATABASE)  # no PARSE_DECLTYPES
         db.row_factory = sqlite3.Row
     return db
 
@@ -34,7 +34,7 @@ def init_db():
             employer TEXT,
             insurance_provider TEXT,
             policy_number TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
     # Appointments Table
@@ -48,20 +48,8 @@ def init_db():
             message TEXT,
             status TEXT DEFAULT 'Pending',
             is_read INTEGER DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(patient_nrc) REFERENCES patients(nrc)
-        )
-    """)
-    # Staff Table (future)
-    db.execute("""
-        CREATE TABLE IF NOT EXISTS staff (
-            staff_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            role TEXT NOT NULL,
-            password TEXT NOT NULL,
-            phone TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
     db.commit()

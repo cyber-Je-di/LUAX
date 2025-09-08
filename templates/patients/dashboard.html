@@ -27,28 +27,25 @@
     </div>
   </div>
 
-<!-- Actions -->
-<div class="grid action-grid" style="margin-top: 3rem; gap: 1.5rem;">
-    <!-- Anchor link to embedded appointment form -->
-    <a href="#appointment" class="card action-card">
-      <div class="action-icon">📅</div>
-      <h3>Book Appointment</h3>
-    </a>
-    <!-- Temporary placeholders -->
-    <a href="#" class="card action-card">
-      <div class="action-icon">📝</div>
-      <h3>Check Appointments</h3>
-    </a>
-    <a href="#" class="card action-card">
-      <div class="action-icon">✉️</div>
-      <h3>Contact Doctor</h3>
-    </a>
-    <a href="#" class="card action-card">
-      <div class="action-icon">📂</div>
-      <h3>Medical History</h3>
-    </a>
-</div>
-
+  <!-- Actions -->
+  <div class="grid action-grid" style="margin-top: 3rem; gap: 1.5rem;">
+      <a href="#appointment" class="card action-card">
+        <div class="action-icon">📅</div>
+        <h3>Book Appointment</h3>
+      </a>
+      <a href="#" class="card action-card">
+        <div class="action-icon">📝</div>
+        <h3>Check Appointments</h3>
+      </a>
+      <a href="#" class="card action-card">
+        <div class="action-icon">✉️</div>
+        <h3>Contact Doctor</h3>
+      </a>
+      <a href="#" class="card action-card">
+        <div class="action-icon">📂</div>
+        <h3>Medical History</h3>
+      </a>
+  </div>
 
   <!-- Upcoming Appointments -->
   <h3 style="margin-top:3rem;">Upcoming Appointments</h3>
@@ -78,39 +75,28 @@
     {% endif %}
   </div>
 
-  <!-- Embedded Appointment Form -->
+  <!-- Simplified Appointment Form -->
   <section id="appointment" class="appointment" style="margin-top:3rem;">
     <h2>Book an Appointment</h2>
     <form method="POST" action="{{ url_for('patients.dashboard') }}" class="appt-form">
       <div class="form-group">
-        <input name="name" placeholder="Full name" pattern="[A-Za-z\s]+" title="Only letters allowed" required>
-        <div style="display:flex; gap:0.5rem; align-items:center;">
-          <select name="country_code" required>
-            <option value="+260">🇿🇲 +260</option>
-            <option value="+27">🇿🇦 +27</option>
-            <option value="+255">🇹🇿 +255</option>
-            <option value="+256">🇺🇬 +256</option>
-            <option value="+254">🇰🇪 +254</option>
-          </select>
-          <input name="phone" type="tel" placeholder="Phone number" pattern="[0-9]{6,12}" title="Enter digits only" required>
-        </div>
-      </div>
-      <div class="form-group">
-        <input name="email" type="email" placeholder="Email (optional)">
-        <select name="service">
-          <option value="">Select Service (optional)</option>
+        <label for="service">Service</label>
+        <select name="service" id="service" required>
+          <option value="">Select Service</option>
           {% for s in ['General Consultation','Dental','Physiotherapy','Diagnostics','Mobile Health'] %}
             <option value="{{ s }}">{{ s }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="form-group">
-        <label for="date" style="font-size:0.9rem; color:var(--text-dark);" required>Appointment Date</label>
+        <label for="date">Appointment Date</label>
         <input id="date" type="date" name="date" required>
-        <label for="time" style="font-size:0.9rem; color:var(--text-dark);" required>Appointment Time</label>
+        <label for="time">Appointment Time</label>
         <input id="time" type="time" name="time" required>
       </div>
-      <textarea name="message" placeholder="Reason for visit (optional)"></textarea>
+      <div class="form-group">
+        <textarea name="message" placeholder="Reason for visit (optional)"></textarea>
+      </div>
       <div class="form-actions">
         <button type="submit" class="btn primary">Submit Booking</button>
         <a class="btn outline" href="https://wa.me/260965318772?text=I%20want%20to%20book%20an%20appointment" target="_blank">

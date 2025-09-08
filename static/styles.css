@@ -56,6 +56,34 @@ body {
   /* Adjustments to position the badge correctly */
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-btn-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Notification badge */
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 /* Section reveal animation */
 section {
   padding: 4rem 0;
@@ -237,6 +265,70 @@ a:hover { color: var(--accent-dark); }
 .card:hover {
   transform: translateY(-6px) scale(1.02);
   box-shadow: 0 12px 32px var(--shadow);
+}
+
+/* Header buttons container */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Admin button wrapper for badge */
+.admin-btn-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Notification badge */
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Buttons hover */
+.btn.outline:hover {
+  background-color: var(--accent);
+  color: var(--white);
+}
+
+/* Responsive: stack buttons on mobile */
+@media (max-width: 992px) {
+  .main-nav {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 75px;
+    left: 0;
+    width: 100%;
+    background-color: var(--white);
+    padding: 1rem 0;
+    box-shadow: 0 8px 16px var(--shadow);
+  }
+  .main-nav.active {
+    display: flex;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem 0;
+  }
+
+  .hamburger {
+    display: block;
+  }
 }
 
 /* -------------------------
@@ -486,9 +578,21 @@ a:hover { color: var(--accent-dark); }
   .hamburger {
     display: block;
   }
+@media (max-width: 992px) {
   .header-actions .btn {
-    display: none;
+    display: block; /* show buttons inside the hamburger menu */
+    width: 90%;      /* optional: make them wider for easy tapping */
+    text-align: center;
   }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+}
+
 }
 @media (max-width: 768px) {
   h1 { font-size: 2rem; }

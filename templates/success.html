@@ -6,9 +6,10 @@
 
   {% if appointment %}
     <p>Thank you <strong>{{ appointment.name }}</strong>!</p>
-    <p>Your appointment details: be sure to review them carefully. And take note of the <strong>Appointment ID</strong>.</p>
+    <p>Your appointment details. Be sure to review them carefully. Take note of your <strong>Appointment ID</strong>.</p>
+
     <ul class="appointment-details">
-      <li><strong>Appointment ID:</strong> {{ appointment.id or "Not specified" }}</li>
+      <li><strong>Appointment ID:</strong> {{ appointment.id }}</li>
       <li><strong>Service:</strong> {{ appointment.service or "Not specified" }}</li>
       <li><strong>Date:</strong> {{ appointment.appointment_date }}</li>
       <li><strong>Time:</strong> {{ appointment.appointment_time or "Not specified" }}</li>
@@ -29,14 +30,19 @@
       </li>
     </ul>
 
-    <div class="form-actions center-actions">
+    <div class="form-actions center-actions" style="margin-top:1rem;">
       <a class="btn primary" href="{{ url_for('update_appointment', appt_id=appointment.id) }}">Update Appointment</a>
-      <form method="POST" action="{{ url_for('cancel_appointment', appt_id=appointment.id) }}">
-        <button type="submit" class="btn outline">Cancel Appointment</button>
-      </form>
+
+      {% if appointment.status != 'Cancelled' %}
+        <form method="POST" action="{{ url_for('cancel_appointment', appt_id=appointment.id) }}" style="display:inline-block;">
+          <button type="submit" class="btn outline">Cancel Appointment</button>
+        </form>
+      {% else %}
+        <span class="btn disabled">Cancelled</span>
+      {% endif %}
     </div>
 
-    <form method="GET" action="{{ url_for('success') }}" class="center-actions">
+    <form method="GET" action="{{ url_for('success') }}" class="center-actions" style="margin-top:1rem;">
       <input type="hidden" name="appt_id" value="{{ appointment.id }}">
       <button type="submit" class="btn outline">Refresh Status</button>
     </form>

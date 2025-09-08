@@ -15,105 +15,120 @@
 </head>
 <body>
 
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="/" class="brand">
-        <div class="logo">🌿</div>
-        <div>
-          <h1 class="clinic-name">{{ clinic.name }}</h1>
-          <p class="clinic-sub">Your Health, Our Priority</p>
+<!-- =========================
+     HEADER
+========================= -->
+<header class="site-header">
+  <div class="container header-inner">
+    <!-- Brand / Logo -->
+    <a href="{{ url_for('index') }}" class="brand">
+      <div class="logo">🌿</div>
+      <div>
+        <h1 class="clinic-name">{{ clinic.name }}</h1>
+        <p class="clinic-sub">Your Health, Our Priority</p>
+      </div>
+    </a>
+
+    <!-- NAVIGATION -->
+    <nav class="main-nav" id="main-nav">
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="/#services">Services</a>
+      <a href="/#team">Team</a>
+      <a href="/#appointment">Book</a>
+      <a href="{{ url_for('check_status') }}">Check Status</a>
+
+      <!-- Buttons -->
+      <div class="header-actions">
+        <a href="{{ url_for('patients.login') }}" class="btn outline">Patient Login</a>
+        <div class="admin-btn-wrapper">
+          <a href="{{ url_for('admin.login') }}" class="btn primary">Admin Login</a>
+          {% if unread_count > 0 %}
+            <span class="notification-badge">{{ unread_count }}</span>
+          {% endif %}
         </div>
-      </a>
+      </div>
+    </nav>
 
-<nav class="main-nav" id="main-nav">
-  <a href="/">Home</a>
-  <a href="/#services">Services</a>
-  <a href="/#team">Team</a>
-  <a href="/#appointment">Book</a>
-  <a href="{{ url_for('check_status') }}">Check Status</a>
+    <!-- Hamburger -->
+    <button class="hamburger" id="hamburger">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+  </div>
+</header>
 
-  <!-- Patient Buttons -->
-  <a href="{{ url_for('patients.login') }}" class="btn secondary mobile-only" style="margin-top:1rem;">
-    Patient Login
-
-  <!-- Admin Button -->
-  <a href="{{ url_for('admin_login') }}" class="btn primary mobile-only" style="margin-top:1rem;">
-    Admin Login
-    {% if unread_count > 0 %}
-      <span class="notification-badge">{{ unread_count }}</span>
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
     {% endif %}
-  </a>
-</nav>
+  {% endwith %}
 
+  {% block content %}{% endblock %}
+</main>
 
-      <button class="hamburger" id="hamburger">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </button>
+<!-- =========================
+     FOOTER
+========================= -->
+<footer class="site-footer">
+  <div class="container footer-container">
+    <div>
+      <h4>{{ clinic.name }}</h4>
+      <p>Compassionate, timely healthcare for our community.</p>
     </div>
-  </header>
-
-  <main>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="container">
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}
-  </main>
-
-  <footer class="site-footer">
-    <div class="container footer-container">
-      <div>
-        <h4>{{ clinic.name }}</h4>
-        <p>Compassionate, timely healthcare for our community.</p>
-      </div>
-      <div>
-        <h4>Quick Links</h4>
-        <p><a href="/#services">Services</a></p>
-        <p><a href="/#appointment">Book Appointment</a></p>
-        <p><a href="{{ url_for('check_status') }}">Check Appointment Status</a></p>
-      </div>
-      <div>
-        <h4>Contact Us</h4>
-        <p><a href="tel:{{ clinic.phone }}">{{ clinic.phone_display }}</a></p>
-        <p><a href="mailto:{{ clinic.email }}">{{ clinic.email }}</a></p>
-        <p>{{ clinic.address }}</p>
-      </div>
+    <div>
+      <h4>Quick Links</h4>
+      <p><a href="/#services">Services</a></p>
+      <p><a href="/#appointment">Book Appointment</a></p>
+      <p><a href="{{ url_for('check_status') }}">Check Appointment Status</a></p>
     </div>
-    <div class="container footer-bottom">
-      <p>&copy; {{ current_year }} {{ clinic.name }}. All Rights Reserved.</p>
+    <div>
+      <h4>Contact Us</h4>
+      <p><a href="tel:{{ clinic.phone }}">{{ clinic.phone_display }}</a></p>
+      <p><a href="mailto:{{ clinic.email }}">{{ clinic.email }}</a></p>
+      <p>{{ clinic.address }}</p>
     </div>
-  </footer>
+  </div>
+  <div class="container footer-bottom">
+    <p>&copy; {{ current_year }} {{ clinic.name }}. All Rights Reserved.</p>
+  </div>
+</footer>
 
-  <script>
-    const hamburger = document.getElementById('hamburger');
-    const mainNav = document.getElementById('main-nav');
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+<script>
+  // Hamburger toggle
+  const hamburger = document.getElementById('hamburger');
+  const mainNav = document.getElementById('main-nav');
 
-    hamburger.addEventListener('click', () => {
-      mainNav.classList.toggle('active');
-      hamburger.classList.toggle('active');
+  hamburger.addEventListener('click', () => {
+    mainNav.classList.toggle('active');
+    hamburger.classList.toggle('active');
+  });
+
+  // Close menu on link click
+  document.querySelectorAll('#main-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (mainNav.classList.contains('active')) {
+        mainNav.classList.remove('active');
+        hamburger.classList.remove('active');
+      }
     });
+  });
 
-    // Close menu if a link is clicked
-    document.querySelectorAll('#main-nav a').forEach(link => {
-      link.addEventListener('click', () => {
-        if (mainNav.classList.contains('active')) {
-          mainNav.classList.remove('active');
-          hamburger.classList.remove('active');
-        }
-      });
-    });
-
-      // Animate stats counters on scroll
+  // Animate stats counters
   document.addEventListener("DOMContentLoaded", () => {
     const counters = document.querySelectorAll("#stats h2");
-    const speed = 150; // lower = faster
+    const speed = 150;
 
     const animateCounters = (entries, observer) => {
       entries.forEach(entry => {
@@ -121,38 +136,32 @@
           const counter = entry.target;
           const updateCount = () => {
             const target = +counter.getAttribute("data-target");
-            const count = +counter.innerText.replace(/\D/g, ""); // remove + or text
-
+            const count = +counter.innerText.replace(/\D/g, "");
             const increment = Math.ceil(target / speed);
-
             if (count < target) {
               counter.innerText = count + increment + "+";
               setTimeout(updateCount, 30);
             } else {
-              counter.innerText = target + "+"; // final number
+              counter.innerText = target + "+";
             }
           };
           updateCount();
-          observer.unobserve(counter); // run once per counter
+          observer.unobserve(counter);
         }
       });
     };
 
-    const observer = new IntersectionObserver(animateCounters, {
-      threshold: 0.5
-    });
-
+    const observer = new IntersectionObserver(animateCounters, { threshold: 0.5 });
     counters.forEach(counter => {
-      // set target numbers as attributes
       if (!counter.hasAttribute("data-target")) {
-        let clean = counter.innerText.replace(/\D/g, ""); 
+        let clean = counter.innerText.replace(/\D/g, "");
         counter.setAttribute("data-target", clean);
         counter.innerText = "0+";
       }
       observer.observe(counter);
     });
   });
-  </script>
+</script>
 
 </body>
 </html>

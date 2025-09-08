@@ -4,7 +4,10 @@
 <div class="container">
   <header class="dashboard-header">
     <h1>Appointments Dashboard</h1>
-    <a class="btn outline" href="{{ url_for('admin_logout') }}">Logout</a>
+    <div class="header-actions">
+      <a class="btn outline" href="{{ url_for('admin.logout') }}">Logout</a>
+      <a class="btn primary" href="{{ url_for('admin.view_patients') }}">View Patients</a>
+    </div>
   </header>
 
   <div class="table-container">
@@ -36,16 +39,13 @@
           </td>
           <td>{{ appt.created_at }}</td>
           <td>
-<form method="POST" action="{{ url_for('admin_update_status', appt_id=appt.id) }}" class="status-form">
-    <select name="status">
-        <option value="Pending" {% if appt.status=='Pending' %}selected{% endif %}>Pending</option>
-        <option value="Confirmed" {% if appt.status=='Confirmed' %}selected{% endif %}>Confirmed</option>
-        <option value="Cancelled" {% if appt.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
-        <option value="Completed" {% if appt.status=='Completed' %}selected{% endif %}>Completed</option>
-    </select>
-    <button type="submit">Update</button>
-</form>
-
+            <form method="POST" action="{{ url_for('admin.update_status', appt_id=appt.id) }}" class="status-form">
+              <select name="status">
+                  <option value="Pending" {% if appt.status=='Pending' %}selected{% endif %}>Pending</option>
+                  <option value="Confirmed" {% if appt.status=='Confirmed' %}selected{% endif %}>Confirmed</option>
+                  <option value="Cancelled" {% if appt.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
+                  <option value="Completed" {% if appt.status=='Completed' %}selected{% endif %}>Completed</option>
+              </select>
 
               <textarea name="custom_message" placeholder="Optional: Customize notification message">
 Hello {{ appt.name }}, your appointment for {{ appt.service }} on {{ appt.appointment_date }} at {{ appt.appointment_time }} is now {{ appt.status }}.
@@ -58,6 +58,11 @@ Hello {{ appt.name }}, your appointment for {{ appt.service }} on {{ appt.appoin
               </div>
 
               <button type="submit" class="btn primary">Update Status & Notify</button>
+            </form>
+
+            <!-- Delete Appointment Button -->
+            <form method="POST" action="{{ url_for('admin.delete_appointment', appt_id=appt.id) }}" style="margin-top:5px;">
+              <button type="submit" class="btn danger" onclick="return confirm('Are you sure you want to delete this appointment?');">Delete</button>
             </form>
           </td>
         </tr>

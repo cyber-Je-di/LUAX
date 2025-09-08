@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+  <header class="dashboard-header">
+    <h1>Registered Patients</h1>
+    <div class="header-actions">
+      <a class="btn outline" href="{{ url_for('admin.dashboard') }}">Back to Dashboard</a>
+      <a class="btn outline" href="{{ url_for('admin.logout') }}">Logout</a>
+    </div>
+  </header>
+
+  <div class="table-container">
+    <table class="appointments-table">
+      <thead>
+        <tr>
+          <th>NRC / ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>DOB</th>
+          <th>Gender</th>
+          <th>Blood Type</th>
+          <th>Emergency Contact</th>
+          <th>Occupation</th>
+          <th>Employer</th>
+          <th>Insurance Provider</th>
+          <th>Policy Number</th>
+          <th>Registered At</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in patients %}
+        <tr>
+          <td>{{ p.nrc }}</td>
+          <td>{{ p.name }}</td>
+          <td>{{ p.email }}</td>
+          <td>{{ p.phone }}</td>
+          <td>{{ p.dob }}</td>
+          <td>{{ p.gender }}</td>
+          <td>{{ p.blood_type or '-' }}</td>
+          <td>{{ p.emergency_contact or '-' }}</td>
+          <td>{{ p.occupation or '-' }}</td>
+          <td>{{ p.employer or '-' }}</td>
+          <td>{{ p.insurance_provider or '-' }}</td>
+          <td>{{ p.policy_number or '-' }}</td>
+          <td>{{ p.created_at }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('admin.delete_patient', nrc=p.nrc) }}">
+              <button type="submit" class="btn danger" onclick="return confirm('Are you sure you want to delete this patient and all their appointments?');">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="14" style="text-align:center;">No patients found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
