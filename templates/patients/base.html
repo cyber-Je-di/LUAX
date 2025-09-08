@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinic Portal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner container">
+      <div class="brand">
+        <span class="logo">🏥</span>
+        <div>
+          <p class="clinic-name">My Clinic</p>
+          <p class="clinic-sub">Patient Portal</p>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+          <a href="/">Home</a>
+  <a href="/#services">Services</a>
+  <a href="/#team">Team</a>
+  <a href="/#appointment">Book</a>
+  <a href="{{ url_for('check_status') }}">Check Status</a>
+        {% if session.get('patient_logged_in') %}
+          <span>Welcome, {{ session.get('patient_name') }}!</span>
+          <a href="{{ url_for('patients.dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('patients.logout') }}">Logout</a>
+        {% else %}
+          <a href="{{ url_for('patients.login') }}">Login</a>
+          <a href="{{ url_for('patients.register') }}">Register</a>
+        {% endif %}
+      </nav>
+
+      <button class="hamburger">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="container" style="margin-top:1rem;">
+          {% for category, msg in messages %}
+            <div class="card" style="background-color: {% if category=='success' %}#38a169{% elif category=='danger' %}#e53e3e{% else %}#3182ce{% endif %}; color:white; padding:1rem; margin-bottom:0.5rem;">
+              {{ msg }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div>
+        <h4>{{ clinic.name }}</h4>
+        <p>Compassionate, timely healthcare for our community.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <p><a href="/#services">Services</a></p>
+        <p><a href="/#appointment">Book Appointment</a></p>
+        <p><a href="{{ url_for('check_status') }}">Check Appointment Status</a></p>
+      </div>
+      <div>
+        <h4>Contact Us</h4>
+        <p><a href="tel:{{ clinic.phone }}">{{ clinic.phone_display }}</a></p>
+        <p><a href="mailto:{{ clinic.email }}">{{ clinic.email }}</a></p>
+        <p>{{ clinic.address }}</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; {{ current_year }} {{ clinic.name }}. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const hamburger = document.querySelector(".hamburger");
+    const nav = document.querySelector(".main-nav");
+    hamburger.addEventListener("click", () => {
+      nav.classList.toggle("active");
+    });
+  </script>
+</body>
+</html>

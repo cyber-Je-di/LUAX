@@ -31,6 +31,12 @@
   <a href="/#team">Team</a>
   <a href="/#appointment">Book</a>
   <a href="{{ url_for('check_status') }}">Check Status</a>
+
+  <!-- Patient Buttons -->
+  <a href="{{ url_for('patients.login') }}" class="btn secondary mobile-only" style="margin-top:1rem;">
+    Patient Login
+
+  <!-- Admin Button -->
   <a href="{{ url_for('admin_login') }}" class="btn primary mobile-only" style="margin-top:1rem;">
     Admin Login
     {% if unread_count > 0 %}
@@ -38,6 +44,7 @@
     {% endif %}
   </a>
 </nav>
+
 
       <button class="hamburger" id="hamburger">
         <span class="bar"></span>

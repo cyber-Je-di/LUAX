@@ -36,15 +36,16 @@
           </td>
           <td>{{ appt.created_at }}</td>
           <td>
-            <form method="POST" action="{{ url_for('admin_update_status', appt_id=appt.id) }}" class="status-form">
-              
-              <select name="status" required>
-                <option value="">Select Status</option>
-                <option value="Pending" {% if appt.status=='Pending' %}selected{% endif %}>Pending</option>
-                <option value="Confirmed" {% if appt.status=='Confirmed' %}selected{% endif %}>Confirmed</option>
-                <option value="Cancelled" {% if appt.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
-                <option value="Completed" {% if appt.status=='Completed' %}selected{% endif %}>Completed</option>
-              </select>
+<form method="POST" action="{{ url_for('admin_update_status', appt_id=appt.id) }}" class="status-form">
+    <select name="status">
+        <option value="Pending" {% if appt.status=='Pending' %}selected{% endif %}>Pending</option>
+        <option value="Confirmed" {% if appt.status=='Confirmed' %}selected{% endif %}>Confirmed</option>
+        <option value="Cancelled" {% if appt.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
+        <option value="Completed" {% if appt.status=='Completed' %}selected{% endif %}>Completed</option>
+    </select>
+    <button type="submit">Update</button>
+</form>
+
 
               <textarea name="custom_message" placeholder="Optional: Customize notification message">
 Hello {{ appt.name }}, your appointment for {{ appt.service }} on {{ appt.appointment_date }} at {{ appt.appointment_time }} is now {{ appt.status }}.

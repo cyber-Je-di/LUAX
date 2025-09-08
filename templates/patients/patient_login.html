@@ -1,0 +1,21 @@
+{% extends "patients/base.html" %}
+
+{% block content %}
+<section class="appointment">
+  <div class="container">
+    <h2>Login</h2>
+    <div class="card appt-form">
+      <form method="POST">
+        <div class="form-group">
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="password" name="password" placeholder="Password" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Login</button>
+          <a href="{{ url_for('patients.register') }}" class="btn outline">Don't have an account? Register</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

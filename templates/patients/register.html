@@ -1,0 +1,122 @@
+{% extends "patients/base.html" %}
+
+{% block content %}
+<section class="appointment">
+  <div class="container">
+    <h2>Patient Registration</h2>
+    <div class="card appt-form">
+      <form method="POST">
+        <!-- ===== Login Details ===== -->
+        <fieldset>
+          <legend>Login Details</legend>
+          <div class="form-group">
+            <label for="email">Email <span style="color:red">*</span></label>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password <span style="color:red">*</span></label>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+          </div>
+          <div class="form-group">
+            <label for="confirm_password">Confirm Password <span style="color:red">*</span></label>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+          </div>
+        </fieldset>
+
+        <!-- ===== Basic Information ===== -->
+        <fieldset>
+          <legend>Basic Information</legend>
+          <div class="form-group">
+            <label for="name">Full Name <span style="color:red">*</span></label>
+            <input type="text" id="name" name="name" placeholder="Full Name" required>
+          </div>
+          <div class="form-group">
+            <label for="nrc">NRC / ID Number <span style="color:red">*</span></label>
+            <input type="text" id="nrc" name="nrc" placeholder="National ID / NRC" required>
+          </div>
+          <div class="form-group">
+            <label for="dob">Date of Birth <span style="color:red">*</span></label>
+            <input type="date" id="dob" name="dob" required>
+          </div>
+          <div class="form-group">
+            <label for="gender">Gender <span style="color:red">*</span></label>
+            <select id="gender" name="gender" required>
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number <span style="color:red">*</span></label>
+            <input type="tel" id="phone" name="phone" placeholder="+260 9XX XXX XXX" required>
+          </div>
+          <div class="form-group">
+            <label for="address">Current Address <span style="color:red">*</span></label>
+            <textarea id="address" name="address" placeholder="Residential Address" rows="3" required></textarea>
+          </div>
+        </fieldset>
+
+        <!-- ===== Medical Information ===== -->
+        <fieldset>
+          <legend>Medical Information</legend>
+          <div class="form-group">
+            <label for="blood_type">Blood Type</label>
+            <select id="blood_type" name="blood_type">
+              <option value="">Select Blood Type</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="allergies">Allergies / Chronic Conditions</label>
+            <textarea id="allergies" name="allergies" placeholder="Specify if any" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="emergency_contact">Emergency Contact Name & Phone</label>
+            <input type="text" id="emergency_contact" name="emergency_contact" placeholder="John Doe - +260 9XX XXX XXX">
+          </div>
+        </fieldset>
+
+        <!-- ===== Employment Information ===== -->
+        <fieldset>
+          <legend>Employment Information</legend>
+          <div class="form-group">
+            <label for="occupation">Occupation</label>
+            <input type="text" id="occupation" name="occupation" placeholder="Occupation / Job Title">
+          </div>
+          <div class="form-group">
+            <label for="employer">Employer / Organization</label>
+            <input type="text" id="employer" name="employer" placeholder="Employer Name">
+          </div>
+        </fieldset>
+
+        <!-- ===== Insurance Information ===== -->
+        <fieldset>
+          <legend>Insurance Information</legend>
+          <div class="form-group">
+            <label for="insurance_provider">Insurance Provider</label>
+            <input type="text" id="insurance_provider" name="insurance_provider" placeholder="Insurance Company">
+          </div>
+          <div class="form-group">
+            <label for="policy_number">Policy Number</label>
+            <input type="text" id="policy_number" name="policy_number" placeholder="Policy / Membership Number">
+          </div>
+        </fieldset>
+
+        <!-- ===== Form Actions ===== -->
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Register</button>
+          <a href="{{ url_for('patients.login') }}" class="btn outline">Already have an account? Login</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

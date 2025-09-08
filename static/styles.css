@@ -294,6 +294,7 @@ a:hover { color: var(--accent-dark); }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  padding: 5px;
 }
 .appt-form input,
 .appt-form textarea,
