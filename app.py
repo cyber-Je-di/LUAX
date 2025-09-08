@@ -280,21 +280,85 @@ def update_appointment(appt_id):
 
 @app.route("/cancel_appointment/<int:appt_id>", methods=["POST"])
 def cancel_appointment(appt_id):
+    if not session.get("patient_logged_in"):
+        flash("⚠️ Please login first.", "warning")
+        return redirect(url_for("patients.login"))
+
     db = get_db()
-    appointment = db.execute("SELECT * FROM appointments WHERE id=?", (appt_id,)).fetchone()
+    patient_nrc = session.get("patient_nrc")
+    patient_name = session.get("patient_name")
+    patient_email = session.get("patient_email")
+
+    appointment = db.execute(
+        "SELECT * FROM appointments WHERE id=? AND patient_nrc=?", 
+        (appt_id, patient_nrc)
+    ).fetchone()
 
     if not appointment:
-        flash("Appointment not found.", "danger")
-        return redirect(url_for("index"))
+        flash("❌ Appointment not found.", "danger")
+        return redirect(url_for("patients.dashboard"))
+
+    if appointment["status"] != "Pending":
+        flash("❌ Only pending appointments can be cancelled.", "warning")
+        return redirect(url_for("patients.dashboard"))
 
     # Update status to Cancelled
     db.execute("UPDATE appointments SET status='Cancelled' WHERE id=?", (appt_id,))
     db.commit()
+    flash(f"✅ Appointment #{appt_id} has been cancelled.", "success")
 
-    flash(f"Appointment #{appt_id} has been cancelled.", "success")
-    return redirect(url_for("success", appt_id=appt_id))
+    # -------------------------
+    # Send email notifications
+    # -------------------------
+    try:
+        mail: "Mail" = current_app.extensions.get("mail")
+        if mail:
+            timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
+            # Admin email
+            admin_subject = f"Appointment Cancelled (#{appt_id})"
+            admin_body = (
+                f"Patient cancelled appointment:\n\n"
+                f"ID: {appt_id}\n"
+                f"Patient: {patient_name}\n"
+                f"Email: {patient_email or '-'}\n"
+                f"Service: {appointment['service'] or '-'}\n"
+                f"Date: {appointment['appointment_date']}  Time: {appointment['appointment_time']}\n"
+                f"Message: {appointment['message'] or '-'}\n"
+                f"Cancelled at: {timestamp} UTC\n"
+            )
+            msg_admin = Message(
+                subject=admin_subject,
+                sender=current_app.config["MAIL_USERNAME"],
+                recipients=[current_app.config["MAIL_USERNAME"]],
+                body=admin_body
+            )
+            mail.send(msg_admin)
 
+            # Patient email
+            patient_subject = "Your Appointment has been Cancelled"
+            patient_body = (
+                f"Hello {patient_name},\n\n"
+                f"Your appointment has been successfully cancelled:\n"
+                f"Service: {appointment['service']}\n"
+                f"Date: {appointment['appointment_date']}  Time: {appointment['appointment_time']}\n"
+                f"Message: {appointment['message'] or '-'}\n\n"
+                f"If this was a mistake, please contact the clinic.\n"
+                f"Cancelled at: {timestamp} UTC\n\n"
+                f"Thank you."
+            )
+            msg_patient = Message(
+                subject=patient_subject,
+                sender=current_app.config["MAIL_USERNAME"],
+                recipients=[patient_email],
+                body=patient_body
+            )
+            mail.send(msg_patient)
+
+    except Exception as e:
+        print(f"[MAIL] Failed to send emails: {e}")
+
+    return redirect(url_for("patients.dashboard"))
 
 # -------------------------
 # APP ENTRY

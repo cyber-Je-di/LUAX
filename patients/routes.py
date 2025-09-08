@@ -102,17 +102,22 @@ def dashboard():
     patient_name = session.get("patient_name")
     patient_email = session.get("patient_email")
     db = get_db()
+    today = datetime.utcnow().strftime("%Y-%m-%d")
 
+    # -------------------------
     # Handle new appointment booking
+    # -------------------------
     if request.method == "POST":
         service = request.form.get("service")
         date = request.form.get("date")
         time = request.form.get("time")
         message = request.form.get("message") or ""
 
-        created_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        if date < today:
+            flash("❌ Appointment date cannot be in the past.", "danger")
+            return redirect(url_for("patients.dashboard"))
 
-        # Insert appointment
+        created_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         cur = db.execute(
             """
             INSERT INTO appointments 
@@ -124,11 +129,9 @@ def dashboard():
         db.commit()
         appt_id = cur.lastrowid
 
-        # -------------------------
-        # Send email notification to clinic admin
-        # -------------------------
+        # Email notification
         try:
-            mail: "Mail" = current_app.extensions.get("mail")
+            mail = current_app.extensions.get("mail")
             if mail:
                 subject = f"New Appointment Booking (#{appt_id})"
                 body = (
@@ -150,6 +153,49 @@ def dashboard():
         flash("✅ Appointment booked successfully!", "success")
         return redirect(url_for("patients.dashboard"))
 
+    # -------------------------
+    # Fetch categorized appointments
+    # -------------------------
+    # Upcoming appointments (Pending or Confirmed, future or today)
+    upcoming_appointments = db.execute(
+        """
+        SELECT * FROM appointments
+        WHERE patient_nrc=? AND status IN ('Pending','Confirmed') AND appointment_date>=?
+        ORDER BY appointment_date ASC, appointment_time ASC
+        """,
+        (nrc, today)
+    ).fetchall()
+
+    # Past appointments (Completed or Cancelled, past dates)
+    past_appointments = db.execute(
+        """
+        SELECT * FROM appointments
+        WHERE patient_nrc=? AND (status='Completed' OR status='Cancelled' OR appointment_date<?)
+        ORDER BY appointment_date DESC, appointment_time DESC
+        """,
+        (nrc, today)
+    ).fetchall()
+
+    # Last visit (most recent completed appointment)
+    last_visit_row = db.execute(
+        """
+        SELECT appointment_date FROM appointments
+        WHERE patient_nrc=? AND status='Completed'
+        ORDER BY appointment_date DESC LIMIT 1
+        """,
+        (nrc,)
+    ).fetchone()
+    last_visit = last_visit_row["appointment_date"] if last_visit_row else None
+
+    return render_template(
+        "patients/dashboard.html",
+        upcoming_appointments=upcoming_appointments,
+        past_appointments=past_appointments,
+        last_visit=last_visit,
+        today=today
+    )
+
+
     # Fetch upcoming appointments
     appointments = db.execute(
         "SELECT * FROM appointments WHERE patient_nrc=? ORDER BY appointment_date ASC",
@@ -168,6 +214,62 @@ def dashboard():
         appointments=appointments,
         last_visit=last_visit
     )
+    
+@patients_bp.route("/cancel_appointment/<int:appt_id>", methods=["POST"])
+def cancel_appointment(appt_id):
+    if not session.get("patient_logged_in"):
+        flash("⚠️ Please login first.", "warning")
+        return redirect(url_for("patients.login"))
+
+    db = get_db()
+    patient_nrc = session.get("patient_nrc")
+    patient_name = session.get("patient_name")
+    patient_email = session.get("patient_email")
+
+    appt = db.execute(
+        "SELECT * FROM appointments WHERE id=? AND patient_nrc=?", 
+        (appt_id, patient_nrc)
+    ).fetchone()
+
+    if not appt:
+        flash("❌ Appointment not found.", "danger")
+    elif appt["status"] != "Pending":
+        flash("❌ Only pending appointments can be cancelled.", "warning")
+    else:
+        # Update appointment status
+        db.execute("UPDATE appointments SET status='Cancelled' WHERE id=?", (appt_id,))
+        db.commit()
+        flash("✅ Appointment cancelled successfully.", "success")
+
+        # -------------------------
+        # Send email notification to clinic admin
+        # -------------------------
+        try:
+            mail: "Mail" = current_app.extensions.get("mail")
+            if mail:
+                subject = f"Appointment Cancelled (#{appt_id})"
+                body = (
+                    f"Patient cancelled appointment:\n\n"
+                    f"ID: {appt_id}\n"
+                    f"Patient: {patient_name}\n"
+                    f"Email: {patient_email or '-'}\n"
+                    f"Service: {appt['service'] or '-'}\n"
+                    f"Date: {appt['appointment_date']}  Time: {appt['appointment_time']}\n"
+                    f"Message: {appt['message'] or '-'}\n"
+                    f"Cancelled at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC\n"
+                )
+                msg = Message(
+                    subject=subject,
+                    sender=current_app.config["MAIL_USERNAME"],
+                    recipients=[current_app.config["MAIL_USERNAME"]],
+                    body=body
+                )
+                mail.send(msg)
+        except Exception as e:
+            print(f"[MAIL] Failed to send admin email: {e}")
+
+    return redirect(url_for("patients.dashboard"))
+
 
 @patients_bp.route("/logout")
 def logout():
